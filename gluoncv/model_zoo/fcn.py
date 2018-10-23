@@ -21,7 +21,7 @@ class FCN(SegBaseModel):
         'resnet101' or 'resnet152').
     norm_layer : object
         Normalization layer used in backbone network (default: :class:`mxnet.gluon.nn.BatchNorm`;
-    pretrained_base : bool
+    pretrained_base : bool or str
         Refers to if the FCN backbone or the encoder is pretrained or not. If `True`,
         model weights of a model that was trained on ImageNet is loaded.
 
@@ -38,9 +38,9 @@ class FCN(SegBaseModel):
     """
     # pylint: disable=arguments-differ
     def __init__(self, nclass, backbone='resnet50', aux=True, ctx=cpu(), pretrained_base=True,
-                 **kwargs):
-        super(FCN, self).__init__(nclass, aux, backbone, ctx=ctx, pretrained_base=True,
-                                  **kwargs)
+                 base_size=520, crop_size=480, **kwargs):
+        super(FCN, self).__init__(nclass, aux, backbone, ctx=ctx, base_size=base_size,
+                                  crop_size=crop_size, pretrained_base=True, **kwargs)
         with self.name_scope():
             self.head = _FCNHead(2048, nclass, **kwargs)
             self.head.initialize(ctx=ctx)
@@ -95,13 +95,14 @@ def get_fcn(dataset='pascal_voc', backbone='resnet50', pretrained=False,
     ----------
     dataset : str, default pascal_voc
         The dataset that model pretrained on. (pascal_voc, ade20k)
-    pretrained : bool, default False
-        Whether to load the pretrained weights for model. This will load FCN pretrained.
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
     ctx : Context, default CPU
         The context in which to load the pretrained weights.
     root : str, default '~/.mxnet/models'
         Location for keeping the model parameters.
-    pretrained_base : bool, default True
+    pretrained_base : bool or str, default True
         This will load pretrained backbone network, that was trained on ImageNet.
 
     Examples
@@ -109,30 +110,20 @@ def get_fcn(dataset='pascal_voc', backbone='resnet50', pretrained=False,
     >>> model = get_fcn(dataset='pascal_voc', backbone='resnet50', pretrained=False)
     >>> print(model)
     """
-
-    from ..data.pascal_voc.segmentation import VOCSegmentation
-    from ..data.pascal_aug.segmentation import VOCAugSegmentation
-    from ..data.ade20k.segmentation import ADE20KSegmentation
-    from ..data.mscoco.segmentation import COCOSegmentation
     acronyms = {
         'pascal_voc': 'voc',
         'pascal_aug': 'voc',
         'ade20k': 'ade',
         'coco': 'coco',
     }
-    datasets = {
-        'pascal_voc': VOCSegmentation,
-        'pascal_aug': VOCAugSegmentation,
-        'ade20k': ADE20KSegmentation,
-        'coco': COCOSegmentation,
-    }
+    from ..data import datasets
     # infer number of classes
     model = FCN(datasets[dataset].NUM_CLASS, backbone=backbone, pretrained_base=pretrained_base,
                 ctx=ctx, **kwargs)
     if pretrained:
         from .model_store import get_model_file
         model.load_parameters(get_model_file(
-            'fcn_%s_%s'%(backbone, acronyms[dataset]), root=root), ctx=ctx)
+            'fcn_%s_%s'%(backbone, acronyms[dataset]), tag=pretrained, root=root), ctx=ctx)
     return model
 
 def get_fcn_resnet50_voc(**kwargs):
@@ -142,8 +133,9 @@ def get_fcn_resnet50_voc(**kwargs):
 
     Parameters
     ----------
-    pretrained : bool, default False
-        Whether to load the pretrained weights for model.
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
     ctx : Context, default CPU
         The context in which to load the pretrained weights.
     root : str, default '~/.mxnet/models'
@@ -163,8 +155,9 @@ def get_fcn_resnet101_coco(**kwargs):
 
     Parameters
     ----------
-    pretrained : bool, default False
-        Whether to load the pretrained weights for model.
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
     ctx : Context, default CPU
         The context in which to load the pretrained weights.
     root : str, default '~/.mxnet/models'
@@ -185,8 +178,9 @@ def get_fcn_resnet101_voc(**kwargs):
 
     Parameters
     ----------
-    pretrained : bool, default False
-        Whether to load the pretrained weights for model.
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
     ctx : Context, default CPU
         The context in which to load the pretrained weights.
     root : str, default '~/.mxnet/models'
@@ -206,8 +200,9 @@ def get_fcn_resnet50_ade(**kwargs):
 
     Parameters
     ----------
-    pretrained : bool, default False
-        Whether to load the pretrained weights for model.
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
     ctx : Context, default CPU
         The context in which to load the pretrained weights.
     root : str, default '~/.mxnet/models'
@@ -227,8 +222,9 @@ def get_fcn_resnet101_ade(**kwargs):
 
     Parameters
     ----------
-    pretrained : bool, default False
-        Whether to load the pretrained weights for model.
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
     ctx : Context, default CPU
         The context in which to load the pretrained weights.
     root : str, default '~/.mxnet/models'

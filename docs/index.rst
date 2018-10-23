@@ -1,14 +1,11 @@
 GluonCV: a Deep Learning Toolkit for Computer Vision
 ========================================================
 
-GluonCV provides implementations of state-of-the-art (SOTA) deep learning
-algorithms in computer vision.
-It is designed for helping engineers, researchers, and students to quickly
-prototype products, validate new ideas, and learning computer vision.
+GluonCV provides implementations of state-of-the-art (SOTA) deep learning algorithms in computer vision. It aims to help engineers, researchers, and students quickly prototype products, validate new ideas and learn computer vision.
 
 GluonCV features:
 
-1. training scripts that reproduces SOTA results reported in latest papers,
+1. training scripts that reproduce SOTA results reported in latest papers,
 
 2. a large set of pre-trained models,
 
@@ -16,16 +13,11 @@ GluonCV features:
 
 4. community support.
 
-GluonCV tutorials assume users have basic knowledges about deep learning and
-computer vision.
-Otherwise, please refer to our introductory deep learning course
-`MXNet-the-Straight-Dope <http://gluon.mxnet.io/>`_.
+Supported Applications
+----------------------
 
-.. note::
-
-   The source codes are available at `Github <https://github.com/dmlc/gluon-cv>`_.
-   This project is at an early stage. Please expect frequent updates.
-   We welcome feedback and contributions.
+.. raw:: html
+   :file: applications.html
 
 Installation
 ------------------
@@ -35,11 +27,15 @@ Install MXNet
 
 GluonCV depends on the recent version of MXNet. The easiest way to install MXNet
 is through `pip <https://pip.pypa.io/en/stable/installing/>`_. The following
-command installs a nightly build CPU version of MXNet.
+command installs CPU version of MXNet.
 
 .. code-block:: bash
 
-   pip install --pre mxnet
+   # the oldest stable version of mxnet required is 1.3.0
+   pip install mxnet>=1.3.0 --upgrade
+
+   # you can install nightly build of mxnet to access up-to-date features
+   pip install --pre --upgrade mxnet
 
 .. note::
 
@@ -58,9 +54,15 @@ The easiest way to install GluonCV is through `pip <https://pip.pypa.io/en/stabl
 
 .. code-block:: bash
 
- pip install gluoncv
+ pip install gluoncv --upgrade
+
+ # if you are eager to try new features, try nightly build instead
+
+ pip install gluoncv --pre --upgrade
 
 .. hint::
+
+  Nightly build is updated daily around 12am UTC to match master progress.
 
   Optionally, you can clone the GluonCV project and install it locally
 
@@ -77,6 +79,13 @@ A Quick Example
 :ref:`Object Detection Demo <sphx_glr_build_examples_detection_demo_ssd.py>`
 
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Model Zoo
+
+   model_zoo/classification
+   model_zoo/detection
+   model_zoo/segmentation
 
 .. toctree::
    :maxdepth: 2
@@ -88,13 +97,6 @@ A Quick Example
    build/examples_segmentation/index
    build/examples_datasets/index
    build/examples_deployment/index
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Model Zoo
-
-   model_zoo/index
-
 
 .. toctree::
    :maxdepth: 1

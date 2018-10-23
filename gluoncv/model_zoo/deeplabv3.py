@@ -9,7 +9,8 @@ from .fcn import _FCNHead
 # pylint: disable-all
 
 __all__ = ['DeepLabV3', 'get_deeplab', 'get_deeplab_resnet101_coco',
-    'get_deeplab_resnet101_voc', 'get_deeplab_resnet50_ade', 'get_deeplab_resnet101_ade']
+    'get_deeplab_resnet101_voc', 'get_deeplab_resnet50_ade', 'get_deeplab_resnet101_ade',
+    'get_deeplab_resnet152_coco', 'get_deeplab_resnet152_voc']
 
 class DeepLabV3(SegBaseModel):
     r"""DeepLabV3
@@ -35,9 +36,9 @@ class DeepLabV3(SegBaseModel):
 
     """
     def __init__(self, nclass, backbone='resnet50', aux=True, ctx=cpu(), pretrained_base=True,
-                 **kwargs):
-        super(DeepLabV3, self).__init__(nclass, aux, backbone, ctx=ctx, pretrained_base=True,
-                                        **kwargs)
+                 base_size=520, crop_size=480, **kwargs):
+        super(DeepLabV3, self).__init__(nclass, aux, backbone, ctx=ctx, base_size=base_size,
+                                     crop_size=crop_size, pretrained_base=True, **kwargs)
         with self.name_scope():
             self.head = _DeepLabHead(nclass, **kwargs)
             self.head.initialize(ctx=ctx)
@@ -152,8 +153,9 @@ def get_deeplab(dataset='pascal_voc', backbone='resnet50', pretrained=False,
     ----------
     dataset : str, default pascal_voc
         The dataset that model pretrained on. (pascal_voc, ade20k)
-    pretrained : bool, default False
-        Whether to load the pretrained weights for model.
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
     ctx : Context, default CPU
         The context in which to load the pretrained weights.
     root : str, default '~/.mxnet/models'
@@ -164,36 +166,28 @@ def get_deeplab(dataset='pascal_voc', backbone='resnet50', pretrained=False,
     >>> model = get_fcn(dataset='pascal_voc', backbone='resnet50', pretrained=False)
     >>> print(model)
     """
-    from ..data.pascal_voc.segmentation import VOCSegmentation
-    from ..data.pascal_aug.segmentation import VOCAugSegmentation
-    from ..data.ade20k.segmentation import ADE20KSegmentation
-    from ..data.mscoco.segmentation import COCOSegmentation
     acronyms = {
         'pascal_voc': 'voc',
         'pascal_aug': 'voc',
         'ade20k': 'ade',
         'coco': 'coco',
     }
-    datasets = {
-        'pascal_voc': VOCSegmentation,
-        'pascal_aug': VOCAugSegmentation,
-        'ade20k': ADE20KSegmentation,
-        'coco': COCOSegmentation,
-    }
+    from ..data import datasets
     # infer number of classes
     model = DeepLabV3(datasets[dataset].NUM_CLASS, backbone=backbone, ctx=ctx, **kwargs)
     if pretrained:
         from .model_store import get_model_file
         model.load_parameters(get_model_file('deeplab_%s_%s'%(backbone, acronyms[dataset]),
-                                         root=root), ctx=ctx)
+                                             tag=pretrained, root=root), ctx=ctx)
     return model
 
 def get_deeplab_resnet101_coco(**kwargs):
     r"""DeepLabV3
     Parameters
     ----------
-    pretrained : bool, default False
-        Whether to load the pretrained weights for model.
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
     ctx : Context, default CPU
         The context in which to load the pretrained weights.
     root : str, default '~/.mxnet/models'
@@ -206,12 +200,32 @@ def get_deeplab_resnet101_coco(**kwargs):
     """
     return get_deeplab('coco', 'resnet101', **kwargs)
 
+def get_deeplab_resnet152_coco(**kwargs):
+    r"""DeepLabV3
+    Parameters
+    ----------
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
+    ctx : Context, default CPU
+        The context in which to load the pretrained weights.
+    root : str, default '~/.mxnet/models'
+        Location for keeping the model parameters.
+
+    Examples
+    --------
+    >>> model = get_deeplab_resnet152_coco(pretrained=True)
+    >>> print(model)
+    """
+    return get_deeplab('coco', 'resnet152', **kwargs)
+
 def get_deeplab_resnet101_voc(**kwargs):
     r"""DeepLabV3
     Parameters
     ----------
-    pretrained : bool, default False
-        Whether to load the pretrained weights for model.
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
     ctx : Context, default CPU
         The context in which to load the pretrained weights.
     root : str, default '~/.mxnet/models'
@@ -224,12 +238,32 @@ def get_deeplab_resnet101_voc(**kwargs):
     """
     return get_deeplab('pascal_voc', 'resnet101', **kwargs)
 
+def get_deeplab_resnet152_voc(**kwargs):
+    r"""DeepLabV3
+    Parameters
+    ----------
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
+    ctx : Context, default CPU
+        The context in which to load the pretrained weights.
+    root : str, default '~/.mxnet/models'
+        Location for keeping the model parameters.
+
+    Examples
+    --------
+    >>> model = get_deeplab_resnet152_voc(pretrained=True)
+    >>> print(model)
+    """
+    return get_deeplab('pascal_voc', 'resnet152', **kwargs)
+
 def get_deeplab_resnet50_ade(**kwargs):
     r"""DeepLabV3
     Parameters
     ----------
-    pretrained : bool, default False
-        Whether to load the pretrained weights for model.
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
     ctx : Context, default CPU
         The context in which to load the pretrained weights.
     root : str, default '~/.mxnet/models'
@@ -246,8 +280,9 @@ def get_deeplab_resnet101_ade(**kwargs):
     r"""DeepLabV3
     Parameters
     ----------
-    pretrained : bool, default False
-        Whether to load the pretrained weights for model.
+    pretrained : bool or str
+        Boolean value controls whether to load the default pretrained weights for model.
+        String value represents the hashtag for a certain version of pretrained weights.
     ctx : Context, default CPU
         The context in which to load the pretrained weights.
     root : str, default '~/.mxnet/models'
